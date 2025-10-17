@@ -13,6 +13,10 @@ from eigrp_poison import eigrp_poisoning
 from eigrp_k_abuse import eigrp_k_abusing
 from eigrp_hello_flood import eigrp_hello_flooding
 from eigrp_rto import eigrp_rto
+from ospf_hello_flood import ospf_hello_flooding
+from ospf_hello_manipulation import ospf_hello_manipulation
+from vrrp_to import vrrp_takeover
+from vrrp_flip_flop import vrrp_flip_flopping
 
 def main():
     banner = f"""{Fore.RED}
@@ -26,39 +30,44 @@ def main():
         {Fore.RESET}"""
 
     attacks_table = f"""{Fore.CYAN}
-    ┌────────────────┬──────────────────────────────────────────────────────────────────────┐
-    │   Attack Type  │                          Description                                 │
-    ├────────────────┼──────────────────────────────────────────────────────────────────────┤
-    │ arp-spoof      │ ARP Spoofing ... (ARP Cache Poisoning)                               │
-    │ dhcp-strv      │ DHCP Starvation ... (Pool Exhaustion)                                │
-    │ rog-dhcp       │ Rogue DHCP Server ... (Malicious DHCP)                               │
-    │ dhcp-rls       │ DHCP Release Spoofing ... (Force Release)                            │
-    │ cam-overflow   │ CAM Table Overflow ... (MAC Address Table Overflow)                  │
-    │ dtp-spoof      │ DTP Spoofing ... (Trunk Negotiation)                                 │
-    │ eigrp-poison   │ EIGRP Poisoning ... (Route Injection)                                │
-    │ eigrp-k        │ EIGRP K-values Abuse ... (Neighbor Disruption)                       │
-    │ eigrp-hello    │ EIGRP Hello Flooding ... (Neighbor Table Overflow)                   │
-    │ eigrp-rto      │ EIGRP Routing Table Overflow ... (Update Flooding)                   │
-    └────────────────┴──────────────────────────────────────────────────────────────────────┘
+    ┌─────────────────┬──────────────────────────────────────────────────────────────────────┐
+    │   Attack Type   │                          Description                                 │
+    ├─────────────────┼──────────────────────────────────────────────────────────────────────┤
+    │ arp-spoof       │ ARP Spoofing ... (ARP Cache Poisoning)                               │
+    │ dhcp-strv       │ DHCP Starvation ... (Pool Exhaustion)                          (DoS) │
+    │ rog-dhcp        │ Rogue DHCP Server ... (Malicious DHCP)                               │
+    │ dhcp-rls        │ DHCP Release Spoofing ... (Force Release)                            │
+    │ cam-overflow    │ CAM Table Overflow ... (MAC Address Table Overflow)                  │
+    │ dtp-spoof       │ DTP Spoofing ... (Trunk Negotiation)                                 │
+    │ eigrp-poison    │ EIGRP Poisoning ... (Route Injection)                                │
+    │ eigrp-k         │ EIGRP K-values Abuse ... (Neighbor Disruption)                 (DoS) │
+    │ eigrp-hello     │ EIGRP Hello Flooding ... (Neighbor Table Overflow)                   │
+    │ eigrp-rto       │ EIGRP Routing Table Overflow ... (Update Flooding)                   │
+    │ ospf-hello      │ OSPF Hello Flooding ... (Neighbor Table Overflow)                    │
+    │ ospf-hello-pman │ OSPF Hello Parameter Manipulation ... (Neighbor Disruption)    (DoS) │
+    │ vrrp-to         │ VRRP Takeover ... (Rogue Master Election)                            │
+    │ vrrp-flip       │ VRRP Flip-Flopping ... (Gateway Unstable)                      (DoS) │
+    └─────────────────┴──────────────────────────────────────────────────────────────────────┘
     {Fore.RESET}"""
 
     # Список доступных атак
     available_attacks = ['arp-spoof', 'dhcp-strv', 'rog-dhcp', 'dhcp-rls', 'cam-overflow',
-                         'dtp-spoof', 'eigrp-poison', 'eigrp-k', 'eigrp-hello', 'eigrp-rto']
+                         'dtp-spoof', 'eigrp-poison', 'eigrp-k', 'eigrp-hello', 'eigrp-rto', 'ospf-hello',
+                         'ospf-hello-pman', "vrrp-to", "vrrp-flip"]
 
     # Показать помощь если нет аргументов или запрошен help
     if len(sys.argv) == 1 or (len(sys.argv) == 2 and sys.argv[1] in ['-h', '--help']):
         print(banner)
         print(attacks_table)
-        print(f"{Fore.YELLOW}   [*] USAGE: sudo python3 salmonella.py <ATTACK_TYPE> [OPTIONS]")
-        print(f"   [*] FOR SPECIFIC ATTACK OPTIONS: sudo python3 salmonella.py <ATTACK_TYPE> --help")
-        print(f"\n   [*] WARNING: This tool is for authorized security testing only. Unauthorized use is illegal. Use responsibly.")
-        print(f"   [*] VERSION: 1.0.0")
-        print(f"   [*] LICENSE: MIT")
-        print(f"   [*] AUTHOR: Alexander Mikhailov")
-        print(f"\n   [*] SUPPORT: ")
-        print(f"          Documentation: https://github.com/alexander-ru/salmonella")
-        print(f"          Issues: https://github.com/alexander-ru/salmonella/issues{Fore.RESET}\n")
+        print(f"{Fore.YELLOW}    [*] USAGE: sudo python3 salmonella.py <ATTACK_TYPE> [OPTIONS]")
+        print(f"    [*] FOR SPECIFIC ATTACK OPTIONS: sudo python3 salmonella.py <ATTACK_TYPE> --help")
+        print(f"\n    [*] WARNING: This tool is for authorized security testing only. Unauthorized use is illegal. Use responsibly.")
+        print(f"    [*] VERSION: 1.1.0")
+        print(f"    [*] LICENSE: MIT")
+        print(f"    [*] AUTHOR: Alexander Mikhailov")
+        print(f"\n    [*] SUPPORT: ")
+        print(f"           Documentation: https://github.com/alexander-ru/salmonella")
+        print(f"           Issues: https://github.com/alexander-ru/salmonella/issues{Fore.RESET}\n")
         sys.exit(0)
 
     attack_type = sys.argv[1]
@@ -193,7 +202,43 @@ def main():
     │  --intf   Your network interface (e.g., eth0, Ethernet)                               │
     └───────────────────────────────────────────────────────────────────────────────────────┘{Fore.RESET}{Fore.YELLOW}\n
     [*] Example:
-          sudo python3 salmonella.py eigrp-rto --intf eth0"""
+          sudo python3 salmonella.py eigrp-rto --intf eth0""",
+
+            "ospf-hello": f"""{Fore.CYAN}
+    ┌───────────────────────────────────────────────────────────────────────────────────────┐
+    │                        OSPF Hello Flooding Attack Parameters                          │
+    ├───────────────────────────────────────────────────────────────────────────────────────┤
+    │  --intf   Your network interface (e.g., eth0, Ethernet)                               │
+    └───────────────────────────────────────────────────────────────────────────────────────┘{Fore.RESET}{Fore.YELLOW}\n
+    [*] Example:
+          sudo python3 salmonella.py ospf-hello --intf eth0""",
+
+            "ospf-hello-pman": f"""{Fore.CYAN}
+    ┌───────────────────────────────────────────────────────────────────────────────────────┐
+    │                        OSPF Hello Parameter Manipulation Attack Parameters            │
+    ├───────────────────────────────────────────────────────────────────────────────────────┤
+    │  --intf   Your network interface (e.g., eth0, Ethernet)                               │
+    └───────────────────────────────────────────────────────────────────────────────────────┘{Fore.RESET}{Fore.YELLOW}\n
+    [*] Example:
+          sudo python3 salmonella.py ospf-hello-pman --intf eth0""",
+
+            "vrrp-to": f"""{Fore.CYAN}
+    ┌───────────────────────────────────────────────────────────────────────────────────────┐
+    │                        VRRP Takeover Attack Parameters                                │
+    ├───────────────────────────────────────────────────────────────────────────────────────┤
+    │  --intf   Your network interface (e.g., eth0, Ethernet)                               │
+    └───────────────────────────────────────────────────────────────────────────────────────┘{Fore.RESET}{Fore.YELLOW}\n
+    [*] Example:
+          sudo python3 salmonella.py vrrp-to --intf eth0""",
+
+            "vrrp-flip": f"""{Fore.CYAN}
+    ┌───────────────────────────────────────────────────────────────────────────────────────┐
+    │                        VRRP Flip-Flopping Attack Parameters                           │
+    ├───────────────────────────────────────────────────────────────────────────────────────┤
+    │  --intf   Your network interface (e.g., eth0, Ethernet)                               │
+    └───────────────────────────────────────────────────────────────────────────────────────┘{Fore.RESET}{Fore.YELLOW}\n
+    [*] Example:
+          sudo python3 salmonella.py vrrp-flip --intf eth0"""
         }
 
         if attack_type in attack_params:
@@ -221,7 +266,11 @@ def main():
                          ("-e", "--external", {"action": "store_true"})],
         "eigrp-k": [("--intf", {})],
         "eigrp-hello": [("--intf", {})],
-        "eigrp-rto": [("--intf", {})]
+        "eigrp-rto": [("--intf", {})],
+        "ospf-hello": [("--intf", {})],
+        "ospf-hello-pman": [("--intf", {})],
+        "vrrp-to": [("--intf", {})],
+        "vrrp-flip": [("--intf", {})]
     }
 
     # Добавление аргументов в парсер
@@ -269,7 +318,11 @@ def main():
         "eigrp-poison": eigrp_poisoning,
         "eigrp-k": eigrp_k_abusing,
         "eigrp-hello": eigrp_hello_flooding,
-        "eigrp-rto": eigrp_rto
+        "eigrp-rto": eigrp_rto,
+        "ospf-hello": ospf_hello_flooding,
+        "ospf-hello-pman": ospf_hello_manipulation,
+        "vrrp-to": vrrp_takeover,
+        "vrrp-flip": vrrp_flip_flopping
     }
 
     attack_names = {
@@ -282,7 +335,11 @@ def main():
         "eigrp-poison": "EIGRP Poisoning",
         "eigrp-k": "EIGRP Abusing K-values",
         "eigrp-hello": "EIGRP Hello Flooding",
-        "eigrp-rto": "EIGRP Routing Table Overflow"
+        "eigrp-rto": "EIGRP Routing Table Overflow",
+        "ospf-hello": "OSPF Hello Flooding",
+        "ospf-hello-pman": "OSPF Hello Parameter Manipulation",
+        "vrrp-to": "VRRP Takeover",
+        "vrrp-flip": "VRRP Flip-Flopping"
     }
 
     print(banner)
