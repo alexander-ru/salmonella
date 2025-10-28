@@ -42,9 +42,8 @@ def main():
     │ eigrp-poison    │ EIGRP Poisoning ... (Route Injection)                                │
     │ eigrp-k         │ EIGRP K-values Abuse ... (Neighbor Disruption)                 (DoS) │
     │ eigrp-hello     │ EIGRP Hello Flooding ... (Neighbor Table Overflow)                   │
-    │ eigrp-rto       │ EIGRP Routing Table Overflow ... (Update Flooding)                   │
+    │ eigrp-upd       │ EIGRP Update Flooding ... (Routing Table Overflow)                   │
     │ ospf-hello      │ OSPF Hello Flooding ... (Neighbor Table Overflow)                    │
-    │ ospf-hello-pman │ OSPF Hello Parameter Manipulation ... (Neighbor Disruption)    (DoS) │
     │ vrrp-to         │ VRRP Takeover ... (Rogue Master Election)                            │
     │ vrrp-flip       │ VRRP Flip-Flopping ... (Gateway Unstable)                      (DoS) │
     └─────────────────┴──────────────────────────────────────────────────────────────────────┘
@@ -52,7 +51,7 @@ def main():
 
     # Список доступных атак
     available_attacks = ['arp-spoof', 'dhcp-strv', 'rog-dhcp', 'dhcp-rls', 'cam-overflow',
-                         'dtp-spoof', 'eigrp-poison', 'eigrp-k', 'eigrp-hello', 'eigrp-rto', 'ospf-hello',
+                         'dtp-spoof', 'eigrp-poison', 'eigrp-k', 'eigrp-hello', 'eigrp-upd', 'ospf-hello',
                          'ospf-hello-pman', "vrrp-to", "vrrp-flip"]
 
     # Показать помощь если нет аргументов или запрошен help
@@ -195,14 +194,14 @@ def main():
     [*] Example:
           sudo python3 salmonella.py eigrp-hello --intf eth0""",
 
-            "eigrp-rto": f"""{Fore.CYAN}
+            "eigrp-upd": f"""{Fore.CYAN}
     ┌───────────────────────────────────────────────────────────────────────────────────────┐
-    │                     EIGRP Routing Table Overflow Attack Parameters                    │
+    │                     EIGRP Update Flooding Attack Parameters                           │
     ├───────────────────────────────────────────────────────────────────────────────────────┤
     │  --intf   Your network interface (e.g., eth0, Ethernet)                               │
     └───────────────────────────────────────────────────────────────────────────────────────┘{Fore.RESET}{Fore.YELLOW}\n
     [*] Example:
-          sudo python3 salmonella.py eigrp-rto --intf eth0""",
+          sudo python3 salmonella.py eigrp-upd --intf eth0""",
 
             "ospf-hello": f"""{Fore.CYAN}
     ┌───────────────────────────────────────────────────────────────────────────────────────┐
@@ -266,7 +265,7 @@ def main():
                          ("-e", "--external", {"action": "store_true"})],
         "eigrp-k": [("--intf", {})],
         "eigrp-hello": [("--intf", {})],
-        "eigrp-rto": [("--intf", {})],
+        "eigrp-upd": [("--intf", {})],
         "ospf-hello": [("--intf", {})],
         "ospf-hello-pman": [("--intf", {})],
         "vrrp-to": [("--intf", {})],
@@ -318,7 +317,7 @@ def main():
         "eigrp-poison": eigrp_poisoning,
         "eigrp-k": eigrp_k_abusing,
         "eigrp-hello": eigrp_hello_flooding,
-        "eigrp-rto": eigrp_rto,
+        "eigrp-upd": eigrp_rto,
         "ospf-hello": ospf_hello_flooding,
         "ospf-hello-pman": ospf_hello_manipulation,
         "vrrp-to": vrrp_takeover,
@@ -335,7 +334,7 @@ def main():
         "eigrp-poison": "EIGRP Poisoning",
         "eigrp-k": "EIGRP Abusing K-values",
         "eigrp-hello": "EIGRP Hello Flooding",
-        "eigrp-rto": "EIGRP Routing Table Overflow",
+        "eigrp-upd": "EIGRP Update Flooding",
         "ospf-hello": "OSPF Hello Flooding",
         "ospf-hello-pman": "OSPF Hello Parameter Manipulation",
         "vrrp-to": "VRRP Takeover",
