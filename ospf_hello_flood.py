@@ -1,6 +1,6 @@
 import time
 from scapy.all import *
-from scapy.contrib.ospf import OSPF_Hdr, OSPF_Hello, OSPF_Link, OSPF_LLS_Hdr
+from scapy.contrib.ospf import OSPF_Hdr, OSPF_Hello
 from colorama import *
 import ipaddress
 
@@ -41,14 +41,14 @@ def ospf_hello_flooding(interface):
 
                 options = packet[OSPF_Hello].options  # N и E - критичные флаги для установления соседства
                 if (options >> 3) & 1:  # Если есть флаг N (он один или еще какой-либо флаг)
-                    options = 0x08  # N флаг (NSSA)
-                    output_options = "NSSA"
-                elif options == 0x00:  # Нет ни одного флага (Stub / Totally Stub)
-                    options = 0x00  # Stub / Totally Stub
+                    options = 0x08  # N флаг (NSSA / Totally NSSA)
+                    output_options = "NSSA / Totally NSSA"
+                elif (options >> 1) & 1:  # Если есть флаг E
+                    options = 0x02  # E флаг (Normal)
+                    output_options = "Normal"
+                else:  # Если нет ни N ни E флагов
+                    options = 0x00
                     output_options = "Stub / Totally Stub"
-                else:
-                    options = 0x02  # E флаг
-                    output_options = "Standard"
 
                 if src_mac in [router["MAC"] for router in ospf_routers.values()]:
                     pass
