@@ -7,10 +7,9 @@ import ipaddress
 def ospf_hello_flooding(interface):
     try:
         print(Fore.YELLOW + f"    [!] Detecting OSPF routers...")  # Переведено
-        global total, router_count, ospf_hello_captured
+        global router_count, ospf_hello_captured
         ospf_hello_captured = False  # Не захвачен
         ospf_routers = {}
-        total = 0
         router_count = 1
 
         def analyze_packet(packet):
@@ -76,6 +75,7 @@ def ospf_hello_flooding(interface):
             ip_pool = [str(ip) for ip in network.hosts()]
 
             try:
+                total = 0
                 while True:
                     for src_ip in ip_pool:
                         src_mac = RandMAC()
