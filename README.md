@@ -269,16 +269,21 @@ Join the development! I welcome ideas for new features and bug reports in the **
 ## <a name="Features">🔥 Features</a>
 - **ARP Spoofing** (ARP cache poisoning)
 - **DHCP**
-  - **DHCP Release Spoofing** (depleting the address pool)
-  - **DHCP Starvation** (exhausting the address pool)
-  - **Rogue DHCP** (deploying a fake DHCP server)
+  - **DHCP Release Spoofing** (Force Release)
+  - **DHCP Starvation** (Pool Exhaustion)
+  - **Rogue DHCP** (Malicious DHCP)
 - **EIGRP**
-  - **EIGRP Poisoning** (routing table poisoning)
-  - **EIGRP Abusing K-values** (manipulating metrics)
-  - **EIGRP Hello Flooding** (overwhelming the neighbor table)
-  - **EIGRP Routing Table Overflow** (overflowing the routing table)
-- **DTP Spoofing** (trunk negotiation spoofing)
-- **CAM Table Overflow** (overflowing the CAM table)
+  - **EIGRP Poisoning** (Route Injection)
+  - **EIGRP Abusing K-values** (Neighbor Disruption)
+  - **EIGRP Hello Flooding** (Neighbor Table Overflow)
+  - **EIGRP Update Flooding** (Routing Table Overflow)
+- **DTP Spoofing** (Trunk Negotiation)
+- **CAM Table Overflow** (MAC Address Table Overflow)
+- **VRRP**
+  - VRRP Takeover (Rogue Master Election)
+  - VRRP Flip-Flopping (Gateway Unstable)
+- **OSPF**
+  - OSPF Hello Flooding (Neighbor Table Overflow)
 
 ## <a name="Warning">⚠ Warning</a>
 **WARNING**: Use only for legitimate purposes and with explicit permission from the network owner.
