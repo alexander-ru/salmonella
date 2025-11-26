@@ -38,7 +38,7 @@
 тестирования на проникновение и исследования уязвимостей сетевых протоколов.  
 
 Присоединяйся к разработке! Я буду рад идеям по новым функциям и сообщениям об ошибках в 
-<a name="https://github.com/alexander-ru/salmonella/issues">Issues</a>
+[Issues](https://github.com/alexander-ru/salmonella/issues)
 
 ## <a name="Возможности">🔥 Возможности
 - **ARP Spoofing** (отравление ARP-кэша)
@@ -302,7 +302,7 @@ of their infrastructure.
 environments, penetration testing, and researching vulnerabilities in network protocols.
 
 Join the development! I welcome ideas for new features and bug reports in the 
-<a name="https://github.com/alexander-ru/salmonella/issues">Issues</a> section.
+[Issues](https://github.com/alexander-ru/salmonella/issues) section.
 
 ## <a name="Features">🔥 Features</a>
 - **ARP Spoofing** (ARP cache poisoning)
