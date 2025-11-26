@@ -19,9 +19,12 @@
   - [EIGRP Poisoning](#eigrp-poison)
   - [EIGRP Abusing K-values](#eigrp-k)
   - [EIGRP Hello Flooding](#eigrp-hello)
-  - [EIGRP Routing Table Overflow](#eigrp-rto)
+  - [EIGRP Update Flooding](#eigrp-upd)
   - [DTP Spoofing](#dtp-spoof)
   - [CAM Table Overflow](#cam-overflow)
+  - [OSPF Hello Flooding](#ospf-hello)
+  - [VRRP Takeover](#vrrp-to)
+  - [VRRP Flip-Flopping](#vrrp-flip)
 - [Лицензия](#Лицензия)
 
 ## <a name="Введение">📝 Введение</a>
@@ -34,7 +37,8 @@
 - **Для чего?** Разработана для проведения учебных упражнений в контролируемых лабораторных средах, 
 тестирования на проникновение и исследования уязвимостей сетевых протоколов.  
 
-Присоединяйся к разработке! Я буду рад идеям по новым функциям и сообщениям об ошибках в **Issues**.
+Присоединяйся к разработке! Я буду рад идеям по новым функциям и сообщениям об ошибках в 
+<a name="https://github.com/alexander-ru/salmonella/issues">Issues</a>
 
 ## <a name="Возможности">🔥 Возможности
 - **ARP Spoofing** (отравление ARP-кэша)
@@ -44,13 +48,13 @@
   - **Rogue DHCP** (развертывание несанкционированного DHCP-сервера)
 - **EIGRP**
   - **EIGRP Poisoning** (отравление таблицы маршрутизации)
-  - **EIGRP Abusing K-values** (манипуляция коэффициентами)
+  - **EIGRP Abusing K-values** (нарушение отношений соседства)
   - **EIGRP Hello Flooding** (переполнение таблицы соседей)
   - **EIGRP Update Flooding** (переполнение таблицы маршрутизации)
 - **DTP Spoofing** (согласование транкового канала)
 - **CAM Table Overflow** (переполнение CAM-таблицы)
 - **VRRP**
-  - VRRP Takeover (несанкционированный выбор master роутера)
+  - VRRP Takeover (несанкционированный выбор Master роутера)
   - VRRP Flip-Flopping (нестабильный шлюз)
 - **OSPF**
   - OSPF Hello Flooding (переполнение таблицы соседей)
@@ -194,15 +198,15 @@ sudo python3 salmonella.py eigrp-hello [-h] [--intf ]
 ![](gif/eigrp-hello-gif.gif)
 ![](pic/result-eigrp-hello.png)
 
-### <a name="eigrp-rto">EIGRP Routing Table Overflow</a>
+### <a name="eigrp-upd">EIGRP Update Flooding</a>
 ```bash
-sudo python3 salmonella.py eigrp-rto [-h] [--intf ]
+sudo python3 salmonella.py eigrp-upd [-h] [--intf ]
 ```
 ```bash
   -h, --help  show this help message and exit
   --intf      Your network interface
 ```
-![](gif/eigrp-rto-gif.gif)
+![](gif/eigrp-upd.gif)
 ![](pic/result-eigrp-rto-1.png)
 ![](pic/result-eigrp-rto-2.png)
 
@@ -225,6 +229,36 @@ sudo python3 salmonella.py cam-overflow [-h] [--intf ]
   --intf      Your network interface
 ```
 ![](gif/cam-overflow-gif.gif)
+
+### <a name="ospf-hello">OSPF Hello Flooding</a>
+```bash
+sudo python3 salmonella.py ospf-hello [-h] [--intf ]
+```
+```bash
+  -h, --help  show this help message and exit
+  --intf      Your network interface
+```
+![](gif/ospf-hello.gif)
+
+### <a name="vrrp-to">VRRP Takeover</a>
+```bash
+sudo python3 salmonella.py vrrp-to [-h] [--intf ]
+```
+```bash
+  -h, --help  show this help message and exit
+  --intf      Your network interface
+```
+![](gif/vrrp-to.gif)
+
+### <a name="vrrp-flip">VRRP Flip-Flopping</a>
+```bash
+sudo python3 salmonella.py vrrp-flip [-h] [--intf ]
+```
+```bash
+  -h, --help  show this help message and exit
+  --intf      Your network interface
+```
+![](gif/vrrp-flip.gif)
 
 ## <a name="Лицензия">📜 Лицензия</a>
 MIT License. Полный текст доступен в файле [LICENSE](LICENSE)
@@ -249,9 +283,12 @@ MIT License. Полный текст доступен в файле [LICENSE](LI
   - [EIGRP Poisoning](#eigrp-poison-en)
   - [EIGRP Abusing K-values](#eigrp-k-en)
   - [EIGRP Hello Flooding](#eigrp-hello-en)
-  - [EIGRP Routing Table Overflow](#eigrp-rto-en)
+  - [EIGRP Update Flooding](#eigrp-upd-en)
   - [DTP Spoofing](#dtp-spoof-en)
   - [CAM Table Overflow](#cam-overflow-en)
+  - [OSPF Hello Flooding](#ospf-hello-en)
+  - [VRRP Takeover](#vrrp-to-en)
+  - [VRRP Flip-Flopping](#vrrp-flip-en)
 - [License](#License)
 
 ## <a name="Introduction">📝 Introduction</a>
@@ -264,7 +301,8 @@ of their infrastructure.
 - For what purpose? Developed for conducting training exercises in controlled lab 
 environments, penetration testing, and researching vulnerabilities in network protocols.
 
-Join the development! I welcome ideas for new features and bug reports in the **Issues** section.
+Join the development! I welcome ideas for new features and bug reports in the 
+<a name="https://github.com/alexander-ru/salmonella/issues">Issues</a> section.
 
 ## <a name="Features">🔥 Features</a>
 - **ARP Spoofing** (ARP cache poisoning)
@@ -430,15 +468,15 @@ sudo python3 salmonella.py eigrp-hello [-h] [--intf ]
 ![](gif/eigrp-hello-gif.gif)
 ![](pic/result-eigrp-hello.png)
 
-### <a name="eigrp-rto-en">EIGRP Routing Table Overflow</a>
+### <a name="eigrp-upd-en">EIGRP Update Flooding</a>
 ```bash
-sudo python3 salmonella.py eigrp-rto [-h] [--intf ]
+sudo python3 salmonella.py eigrp-upd [-h] [--intf ]
 ```
 ```bash
   -h, --help  show this help message and exit
   --intf      Your network interface
 ```
-![](gif/eigrp-rto-gif.gif)
+![](gif/eigrp-upd.gif)
 ![](pic/result-eigrp-rto-1.png)
 ![](pic/result-eigrp-rto-2.png)
 
@@ -461,6 +499,36 @@ sudo python3 salmonella.py cam-overflow [-h] [--intf ]
   --intf      Your network interface
 ```
 ![](gif/cam-overflow-gif.gif)
+
+### <a name="ospf-hello-en">OSPF Hello Flooding</a>
+```bash
+sudo python3 salmonella.py ospf-hello [-h] [--intf ]
+```
+```bash
+  -h, --help  show this help message and exit
+  --intf      Your network interface
+```
+![](gif/ospf-hello.gif)
+
+### <a name="vrrp-to-en">VRRP Takeover</a>
+```bash
+sudo python3 salmonella.py vrrp-to [-h] [--intf ]
+```
+```bash
+  -h, --help  show this help message and exit
+  --intf      Your network interface
+```
+![](gif/vrrp-to.gif)
+
+### <a name="vrrp-flip-en">VRRP Flip-Flopping</a>
+```bash
+sudo python3 salmonella.py vrrp-flip [-h] [--intf ]
+```
+```bash
+  -h, --help  show this help message and exit
+  --intf      Your network interface
+```
+![](gif/vrrp-flip.gif)
 
 ## <a name="License">📜 License</a>
 MIT License. The full text is available in the [LICENSE](LICENSE) file.
